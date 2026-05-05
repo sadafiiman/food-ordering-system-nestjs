@@ -1,0 +1,67 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  isActive  Boolean  @default(false)
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders    Order[]
+}
+
+model Food {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  price       Float
+  createdAt   DateTime @default(now())
+
+  availabilities FoodAvailability[]
+  orders         Order[]
+}
+
+model FoodAvailability {
+  id        String   @id @default(uuid())
+  foodId    String
+  date      DateTime
+  quantity  Int
+
+  food      Food     @relation(fields: [foodId], references: [id])
+
+  @@unique([foodId, date]) // prevent duplicate entries per day
+}
+
+model Order {
+  id        String   @id @default(uuid())
+  userId    String
+  foodId    String
+  quantity  Int
+  date      DateTime
+  status    OrderStatus @default(PENDING)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  food      Food     @relation(fields: [foodId], references: [id])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  DELIVERED
+}
