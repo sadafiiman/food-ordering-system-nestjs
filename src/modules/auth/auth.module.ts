@@ -12,12 +12,19 @@ import { PrismaService } from '../../common/prisma/prisma.service';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        secret: config.get('jwt.secret'),
-        signOptions: {
-          expiresIn: config.get('jwt.expiresIn'),
-        },
-      }),
+      useFactory: (config: ConfigService) => {
+        const secret = config.get<string>('JWT_SECRET');
+
+        const expiresIn = config.get<string>('JWT_EXPIRES_IN') ?? '1d';
+
+        return {
+          secret: secret as string,
+          signOptions: {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            expiresIn: expiresIn as any, // 👈 safe cast for Nest/JWT types
+          },
+        };
+      },
     }),
   ],
   controllers: [AuthController],
