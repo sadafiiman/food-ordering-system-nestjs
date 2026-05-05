@@ -1,5 +1,8 @@
 import { Controller, Get, Post, Patch, Body, Param } from '@nestjs/common';
 import { AdminService } from './admin.service';
+import { AddFoodAvailabilityDto } from './DTOs/AddFoodAvailabilityDto';
+import { CreateFoodDto } from './DTOs/CreateFoodDto';
+import { UpdateUserStatusDto } from './DTOs/UpdateUserStatusDto';
 
 @Controller('admin')
 export class AdminController {
@@ -17,12 +20,12 @@ export class AdminController {
   }
 
   @Patch('users/:id/status')
-  updateStatus(@Param('id') id: string, @Body() body: { isActive: boolean }) {
+  updateStatus(@Param('id') id: string, @Body() body: UpdateUserStatusDto) {
     return this.adminService.updateUserStatus(id, body.isActive);
   }
 
   @Post('foods')
-  createFood(@Body() body: any) {
+  createFood(@Body() body: CreateFoodDto) {
     return this.adminService.createFood(body);
   }
 
@@ -31,13 +34,12 @@ export class AdminController {
     return this.adminService.listFoods();
   }
 
-  // 📅 AVAILABILITY
   @Post('foods/:id/availability')
   setAvailability(
     @Param('id') id: string,
-    @Body() body: { date: string; quantity: number },
+    @Body() body: AddFoodAvailabilityDto,
   ) {
-    return this.adminService.setAvailability(id, new Date(body.date), body.quantity);
+    return this.adminService.setAvailability(id, body.date, body.quantity);
   }
 
   // 🧾 ORDERS

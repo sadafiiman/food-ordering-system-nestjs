@@ -38,8 +38,6 @@ export class AdminService {
     });
   }
 
-  // 🍔 FOOD MANAGEMENT
-
   createFood(data: { name: string; price: number; description?: string }) {
     return this.prisma.food.create({
       data,
@@ -50,8 +48,6 @@ export class AdminService {
     return this.prisma.food.findMany();
   }
 
-  // 📅 SET FOOD AVAILABILITY
-
   async setAvailability(foodId: string, date: Date, quantity: number) {
     return this.prisma.foodAvailability.create({
       data: {
@@ -61,8 +57,6 @@ export class AdminService {
       },
     });
   }
-
-  // 🧾 ORDER MANAGEMENT
 
   async listOrders() {
     return this.prisma.order.findMany({
