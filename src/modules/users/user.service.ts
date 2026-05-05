@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { userProfileSelect } from './constants/user.select';
 
 @Injectable()
 export class UserService {
@@ -9,13 +10,7 @@ export class UserService {
   async getProfile(userId: string) {
     return this.prisma.user.findUnique({
       where: { id: userId },
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        isActive: true,
-        createdAt: true,
-      },
+      select: userProfileSelect,
     });
   }
 

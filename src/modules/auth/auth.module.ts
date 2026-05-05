@@ -5,29 +5,24 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
     PassportModule,
     JwtModule.registerAsync({
-      imports: [ConfigModule],
+      imports: [ConfigModule], // ✅ important
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => {
-        const secret = config.get<string>('JWT_SECRET');
-
-        const expiresIn = config.get<string>('JWT_EXPIRES_IN') ?? '1d';
-
-        return {
-          secret: secret as string,
-          signOptions: {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            expiresIn: expiresIn as any, // 👈 safe cast for Nest/JWT types
-          },
-        };
-      },
+      useFactory: (config: ConfigService) => ({
+        secret: config.get<string>('jwt.secret')!,
+        signOptions: {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          expiresIn: (config.get<string>('jwt.expiresIn') || '1d') as any,
+        },
+      }),
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, PrismaService],
+  providers: [AuthService, PrismaService, JwtStrategy],
 })
 export class AuthModule {}
