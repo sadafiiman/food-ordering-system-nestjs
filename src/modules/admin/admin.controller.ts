@@ -16,17 +16,11 @@ export class AdminController {
     return this.adminService.listPendingUsers();
   }
 
-  @Patch('users/:id/activate')
-  activate(@Param('id') id: string) {
-    return this.adminService.activateUser(id);
+  @Patch('users/:id/status')
+  updateStatus(@Param('id') id: string, @Body() body: { isActive: boolean }) {
+    return this.adminService.updateUserStatus(id, body.isActive);
   }
 
-  @Patch('users/:id/deactivate')
-  deactivate(@Param('id') id: string) {
-    return this.adminService.deactivateUser(id);
-  }
-
-  // 🍔 FOOD
   @Post('foods')
   createFood(@Body() body: any) {
     return this.adminService.createFood(body);
